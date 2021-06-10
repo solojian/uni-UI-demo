@@ -1,0 +1,12 @@
+
+var date = {
+  getNow: function(){
+    var t = getDate()
+    var month = t.getMonth() + 1
+    return t.getFullYear() + '-' + month + '-' + t.getDate()
+  }
+}
+
+module.exports = {
+  getNow: date.getNow
+}

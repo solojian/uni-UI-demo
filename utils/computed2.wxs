@@ -1,0 +1,68 @@
+var computed = {
+  total: function (array) {
+    var result = array.reduce(function (total, item) {
+      return total + item.goodNum * item.goodPrice
+    }, 0)
+    return result.toFixed(2)
+  },
+  serTotal: function (array1, array2) {
+    var result1 = array1.reduce(function (total, item) {
+      // servicePrice 二级维保单价 
+      // serviceHours 工时数  
+      // shopLevelRate 店铺水平系数
+      // servcieMileage 里程数
+      // servcieMileagePrice 里程单价
+      // serviceHighSppedFee 高速费
+      // tonnageCoef 吨位
+      // serverLevelRate 工程师服务系数
+      // handsNum 拆装配件数量
+      // seleteUrgentValue 加急费
+      // seleteToShop 是否到店
+      // shopPrice 店铺工时费
+      // serviceNum 数量
+      // seleteToShopValue 维修场景系数
+
+      // 里程费 = (里程 - 10) > 0 ? (30 + (里程-10) * 2) : 30
+      // 维修总费用 = 店铺工时费 * 维保二级类工时 * 吨位系数 * 下单折扣人 * 数量 * （维修场景系数 + 拆装数量 * (拆装系数 -1) ）*工程师系数 + 里程费 + 加急费
+      // 整修总费用 = 店铺工时费 * 维保二级类工时 * 吨位系数 * 下单折扣人 * 数量 * （维修场景系数 + 拆装数量 * (拆装系数 -1) ）+ 里程费 + 加急费
+      // return total + item.servicePrice * item.serviceHours * item.serverLevelRate * item.shopLevelRate + 
+      //   item.servcieMileage * item.servcieMileagePrice + Number(item.serviceHighSppedFee)
+      var _servcieMileage = item.servcieMileage - 10 > 0 ? 30 + (item.servcieMileage - 10) * 2 : 30
+      return total + item.shopPrice * (item.servicePrice * item.serviceHours) * item.tonnageCoef * 1 * item.serviceNum * (item.seleteToShopValue + item.handsNum * (1.2 - 1)) * serverLevelRate + _servcieMileage + Number(item.seleteUrgentValue)
+      // return 0
+    }, 0)
+
+    // 配件数量  goodNum
+    // 配件单价  goodPrice
+    var result2 = array2.reduce(function (total, item) {
+      return total + item.goodNum * item.goodPrice
+    }, 0)
+    var result = result1 + result2
+    return result.toFixed(2)
+  },
+  getMinTotal: function (obj) {
+    console.log(obj)
+    // servcieMileage
+    // shopPrice
+    // servicePrice
+    // serviceHours
+    // tonnageCoef
+    // 下单折扣人 vipRate
+    // serviceNum
+    // seleteToShopValue
+    // handsNum
+    // 拆装系数 没有 数值 1.2代替了 1.2
+    // serverLevelRate
+    // seleteUrgentValue
+    var _servcieMileage1 = obj.servcieMileage - 10 > 0 ? 30 + (obj.servcieMileage - 10) * 2 : 30 // 里程
+    return obj.shopPrice * (obj.servicePrice * obj.serviceHours) * obj.tonnageCoef * 1.2 * obj.serviceNum *
+      (obj.seleteToShopValue + obj.handsNum * (1.2 - 1)) * obj.serverLevelRate + _servcieMileage1 + Number(obj.seleteUrgentValue)
+  }
+}
+
+// 导出对外暴露的属性
+module.exports = {
+  total: computed.total,
+  serTotal: computed.serTotal,
+  getMinTotal: computed.getMinTotal
+}

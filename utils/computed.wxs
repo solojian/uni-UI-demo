@@ -1,0 +1,137 @@
+// var computed = {
+//   total: function(array) {
+//    var result = array.reduce(function (total,item) {
+//      return total + item.goodNum * item.goodPrice
+//     },0)
+//     return result.toFixed(2)
+//   },
+//   serTotal:function(array1,array2,array3) {
+//     var result1 = array1.reduce(function(total,item) {
+//       return total + item.servicePrice * item.serviceHours * item.serverLevelRate * item.shopLevelRate + 
+//         item.servcieMileage * item.servcieMileagePrice + Number(item.serviceHighSppedFee)
+//     },0)
+//     var result2 = array2.reduce(function (total, item) {
+//       return total + item.goodNum * item.goodPrice
+//     }, 0)
+//     var result = result1 + result2
+//     return result.toFixed(2)
+//   },
+
+// }
+
+// // 导出对外暴露的属性
+// module.exports = {
+//   total: computed.total,
+//   serTotal: computed.serTotal
+// }
+var computed = {
+  total: function(array) {
+    var result = array.reduce(function(total, item) {
+      return total + item.goodNum * item.goodPrice
+    }, 0)
+    return result.toFixed(2)
+  },
+  totalProfit: function (array) {
+    var result = array.reduce(function (total, item) {
+      return total + item.goodNum *(item.goodsProfit || 0)
+    }, 0)
+    return result.toFixed(2)
+  },
+  totalFreight: function (array) {
+    var result = array.reduce(function (total, item) {
+      
+        return total + (item.goodFreight || 0)
+    
+    }, 0)
+    return result.toFixed(2)
+  },
+
+  // var result1 = array1.reduce(function(total,item) {
+  //   // servicePrice 二级维保单价 
+  //   // serviceHours 工时数  
+  //   // shopLevelRate 店铺水平系数
+  //   // servcieMileage 里程数
+  //   // servcieMileagePrice 里程单价
+  //   // serviceHighSppedFee 高速费
+  //   // tonnageCoef 吨位
+  //   // serverLevelRate 工程师服务系数
+  //   // handsNum 拆装配件数量
+  //   // seleteUrgentValue 加急费
+  //   // seleteToShop 是否到店
+  //   // shopPrice 店铺工时费
+  //   // serviceNum 数量
+  //   // seleteToShopValue 维修场景系数
+
+  //   // 里程费 = (里程 - 10) > 0 ? (30 + (里程-10) * 2) : 30
+  //   // 维修总费用 = 店铺工时费 * 维保二级类工时 * 吨位系数 * 下单折扣人 * 数量 * （维修场景系数 + 拆装数量 * (拆装系数 -1) ）*工程师系数 + 里程费 + 加急费
+  //   // 整修总费用 = 店铺工时费 * 维保二级类工时 * 吨位系数 * 下单折扣人 * 数量 * （维修场景系数 + 拆装数量 * (拆装系数 -1) ）+ 里程费 + 加急费
+  //   // return total + item.servicePrice * item.serviceHours * item.serverLevelRate * item.shopLevelRate + 
+  //   //   item.servcieMileage * item.servcieMileagePrice + Number(item.serviceHighSppedFee)
+  //   var _servcieMileage = item.servcieMileage - 10 > 0 ? 30 + (item.servcieMileage - 10) * 2 : 30
+  //   return total + item.shopPrice * (item.servicePrice * item.serviceHours) * item.tonnageCoef * 1 * item.serviceNum * (item.seleteToShopValue + item.handsNum * (1.2 -1)) * serverLevelRate + _servcieMileage + Number(item.seleteUrgentValue)
+  //   // return 0
+  // },0)
+  serTotal: function(array1, array2, array3) {
+    var result1 = 0
+    var result2 = 0
+    var result3 = 0
+    if (array1 && array1.length > 0) {
+
+       result1 = array1.reduce(function(total, item) { // 有维保的
+        // var servcieMileage = item.servcieMileage - 10 > 0 ? 30 + (item.servcieMileage - 10) * 4 : 30
+         var servcieMileage = item.servcieMileage ? (item.servcieMileage - item.startKm > 0 ? item.startPrice + (item.servcieMileage - item.startKm) * item.unitPrice : item.startPrice) : 0
+         return total + (item.shopPrice * item.serviceHours * item.tonnageCoef * item.vipRate) * item.serviceNum * (item.seleteToShopValue + item.handsNum * (item.disMounting - 1)) * item.serverLevelRate + servcieMileage + Number(item.seleteUrgentValue)
+
+
+      }, 0) 
+    }
+    if (array3 && array3.length>0){
+       result3 = array3.reduce(function (total, item) { // 整修的
+        // var _servcieMileage1 = item.servcieMileage - 10 > 0 ? 30 + (item.servcieMileage - 10) * 4 : 30
+         var _servcieMileage1 = item.servcieMileage ? (item.servcieMileage - item.startKm > 0 ? item.startPrice + (item.servcieMileage - item.startKm) * item.unitPrice : item.startPrice) : 0
+         return total + item._allTonnagePrice * item._repairVipRate * item.serviceNum * (item._seleteToShopValue + item.handsNum * (item.disMounting - 1)) +
+          _servcieMileage1 + item._seleteUrgentValue
+      }, 0) 
+    }
+    // 配件数量  goodNum
+    // 配件单价  goodPrice
+    if (array2 && array2.length > 0){
+       result2 = array2.reduce(function (total, item) {
+        return total + item.goodNum * item.goodPrice
+      }, 0) 
+    } 
+
+    var result = result1 + result2  + result3 
+
+    return result.toFixed(2)
+  },
+  // getMinTotal: function(obj) {
+  //   console.log(obj)
+  //   alert(obj)
+    // servcieMileage
+    // shopPrice
+    // servicePrice
+    // serviceHours
+    // tonnageCoef
+    // 下单折扣人 没有 数值 1代替了
+    // serviceNum
+    // seleteToShopValue
+    // handsNum
+    // 拆装系数 没有 数值 1代替了
+    // serverLevelRate
+    // seleteUrgentValue
+    // var _servcieMileage1 = Number(obj.servcieMileage) - 10 > 0 ? 30 + (Number(obj.servcieMileage) - 10) * /// 2 : 30 // 里程
+    // return Number(obj.shopPrice) * (Number(obj.servicePrice) * Number(obj.serviceHours)) * Number(obj.tonnageCoef) * 1 * Number(obj.serviceNum) * 
+    // (Number(obj.seleteToShopValue) + Number(obj.handsNum) * (1.2 -1)) * Number(obj.serverLevelRate) + Number(_servcieMileage1) + Number(obj.seleteUrgentValue) || 0
+    // return 0
+  // }
+}
+
+// 导出对外暴露的属性
+module.exports = {
+  total: computed.total,
+  serTotal: computed.serTotal,
+  getMinTotal: computed.getMinTotal,
+  totalFreight: computed.totalFreight,
+  totalProfit: computed.totalProfit
+}
