@@ -40,10 +40,7 @@
 			}
 		},
 		 onShow: function () {
-		    const tel = getTel()
-		    this.setData({
-		      tel
-		    })
+		    this.tel = getTel()
 		  },
 		methods: {
 			
