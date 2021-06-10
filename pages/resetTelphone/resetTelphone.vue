@@ -1,22 +1,23 @@
 <template>
-	<!--pages/resetTelphone/resetTelphone.wxml-->
 	<view class="root">
 	  <view class="form">
 	    <view class="form-wrap">
 	      <image src="../../static/image/ic_iphone.png"></image>
 	      <view class="form-title">验证当前手机号</view>
 	      <view class="tel">{{telReg}}</view>
-	      <view class="form-item">
+	     <!-- <view class="form-item">
 	        <image src="../../static/image/ic_Verification.png"></image>
 	        <input class="form-input" maxlength="6" type="number" placeholder="请输入6位数验证码" v-model="code" />
 	        <view class="getcode" v-if='computeTime > 0'>已发送{{computeTime}}s</view>
 	        <view class="getcode blue" @click="getVerification" v-else>获取验证码</view>
-	      </view>
+	      </view> -->
+		  <uni-verification @sendCode='sendCode'></uni-verification>
 	    </view>
 	  </view>
 	  <view class="bottom-box">
 	    <view class="wrap">
-	      <button @click="handleNext">下一步</button>
+	      <!-- <button class="btn" @click="handleNext()">下一步</button> -->
+	      <navigator class="btn" url="../resetTelphone2/resetTelphone2">下一步</navigator>
 	    </view>
 	  </view>
 	</view>
@@ -42,40 +43,9 @@
 		    }
 		  },
 		methods: {
-			getVerification() {
-			    if (this.computeTime > 0) return
-			    this.computeTime = 60
-			    // 启循环定时器, 改变computedTime
-			    const interverId = setInterval(() => {
-			      this.computeTime --
-			     
-			      // 当计时达到最小值时, 清除定时器
-			      if (this.computeTime <= 0) {
-			        this.computeTime = 0
-			        clearInterval(interverId)
-			      }
-			    }, 1000)
-			    reqSendCode({
-			      tel: this.data.tel
-			    }).then(res => {
-			      console.log(res, '获取验证码')
-			      if(res.data.code == 0) {
-			        uni.showToast({
-			          title: '获取验证码成功！'
-			        })
-			      } else {
-			        uni.showToast({
-			          title: '获取验证码失败！',
-			          icon: 'none'
-			        })
-			      }
-			    }).catch(() => {
-			      uni.showToast({
-			        title: '获取验证码失败！',
-			        icon: 'none'
-			      })
-			    })
-			  },
+			sendCode(c) {
+				this.code = c
+			},
 			  
 			  handleNext(){
 			      const {code,tel} = this
@@ -189,9 +159,10 @@ line-height: 45rpx;
 .bottom-box .wrap{
   width: 670rpx;
 }
-.bottom-box .wrap button{
+.bottom-box .wrap .btn{
   width: 670rpx;
   height: 90rpx;
+  line-height: 90rpx;
   background: #2B64FF;
   border-radius: 6rpx;
   font-size: 36rpx;

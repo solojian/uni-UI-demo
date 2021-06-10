@@ -40,6 +40,15 @@
             }
             
         }
+        ,{
+            "path" : "pages/resetTelphone2/resetTelphone2",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "更换手机号",
+                "enablePullDownRefresh": false
+            }
+            
+        }
     ],
 	  "globalStyle": {
 	        "navigationBarTextStyle": "black",
